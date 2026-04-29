@@ -1,0 +1,95 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Store user identity and profile information.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "idNumber": { "type": "string" },
+        "province": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "producer", "carrier", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["displayName", "email", "role"]
+    },
+    "Process": {
+      "title": "Service Process",
+      "description": "Tracks service requests like NIF, Licenses, etc.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "dateRequested": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "status", "dateRequested"]
+    },
+    "LogisticOrder": {
+      "title": "Logistic Order",
+      "description": "Tracks a shipment from origin to destination.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "origin": { "type": "string" },
+        "dest": { "type": "string" },
+        "status": { "type": "string", "enum": ["preparing", "transit", "delivered"] },
+        "driver": { "type": "string" },
+        "eta": { "type": "string" },
+        "dateCreated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "origin", "dest", "status"]
+    },
+    "Message": {
+      "title": "Real-time Message",
+      "description": "A single message in a conversation.",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["sent", "read"] }
+      },
+      "required": ["senderId", "text", "timestamp"]
+    },
+    "TraceabilityRecord": {
+      "title": "Traceability Record",
+      "description": "Full lineage and quality data for a product batch.",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string" },
+        "productName": { "type": "string" },
+        "producerId": { "type": "string" },
+        "producerName": { "type": "string" },
+        "steps": { "type": "array" },
+        "metrics": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["batchId", "productName", "producerId"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles indexed by their Auth UID."
+    },
+    "processes/{processId}": {
+      "schema": "Process",
+      "description": "Requests for agricultural services."
+    },
+    "logisticOrders/{orderId}": {
+      "schema": "LogisticOrder",
+      "description": "Active logistics shipments."
+    },
+    "traceability/{batchId}": {
+      "schema": "TraceabilityRecord",
+      "description": "Traceability data for product batches."
+    },
+    "conversations/{convId}/messages/{msgId}": {
+      "schema": "Message",
+      "description": "Messages within a conversation."
+    }
+  }
+}
